@@ -1,26 +1,39 @@
 # Avocado Production Analysis
 
-## 問い
-メキシコの世界シェアは今も一強なのか？
+Is Mexico still the world's dominant avocado producer? An analysis of 60+ years of FAO production data.
 
-## データ
-Our World in Data（FAO由来）、1961〜2024年、URLから直接取得
-
-## 結論
-メキシコのシェアは1994年前後にピーク（約38%）を迎えるまで上昇し続けたが、その後は増減を繰り返しながら下降傾向にある。
+## Key results
+- Mexico's share of world production rose from about 15% in 1961 to a peak of about 38% around 1994, and has trended downward since, while still moving up and down.
+- In 2023, Mexico remained #1 by a wide margin, but Indonesia ranked #4, producing almost as much as Peru, a well-known export powerhouse, yet it barely appears in export markets.
+- The raw data mixes countries with regional and income-group aggregates. I filtered to real countries using the 3-letter country code, and validated the result against the official world total.
 
 ![Mexico Share](figures/mexico_share.png)
 
-2023年時点では、メキシコが2位以下を大きく引き離して1位を維持している。注目すべきはインドネシアで、世界的な輸出大国として知られるペルーとほぼ同水準の生産量（4位）を記録しているにもかかわらず、輸出市場ではほとんど名前が挙がらない。
+## Question
+Is Mexico still the one dominant producer of avocados in the world?
+
+## Data
+- Our World in Data (based on FAO), 1961–2024
+- Loaded directly from the URL with pandas
+
+## Findings
+Mexico's share of world production kept rising until it peaked at about 38% around 1994. Since then it has gone up and down, with an overall downward trend.
+
+In 2023, Mexico still produced far more than any other country. The surprising one is Indonesia: it ranked #4, with almost the same production as Peru, which is known as a major exporter. Yet Indonesia is rarely mentioned in export markets.
 
 ![Top 10](figures/top10_2023.png)
 
-## 分析の過程
-Entityに国名以外（Asia、World、Upper-middle-income countries など）が混ざっていることを発見した。国名一つ一つを名前で判定することは途方もないほどの時間がかかるため、そのほかの絞り込みに使える傾向がないか探したところ、国名の場合のみCodeが３文字であることを発見した。そこでlen()を使いCodeが３文字かどうかでそのEntityが国名かどうかを判断するアルゴリズムを適用した。
+## How I cleaned the data
+The `Entity` column contained not only countries but also aggregates such as `Asia`, `World`, and `Upper-middle-income countries`. Adding them up would count the same country several times.
 
-国だけを正しく絞り込めているかを確認するため、countries の生産量を合計した値と、データに含まれる World（OWIDが提供する世界合計）の値を照合した。両者が一致したことから、絞り込みに国の重複や漏れがないことが確認できた。
+Checking hundreds of names one by one was not realistic, so I looked for a pattern that could separate countries from aggregates. I found that only real countries have a 3-letter `Code`, so I kept the rows where the code length is 3.
 
-## 使い方
+To check that the filter was correct, I compared the sum of all countries with the `World` total provided by Our World in Data. The two matched within 0.1%, which confirmed that no countries were double-counted or missing.
+
+## Next steps
+- Use export data to test why Indonesia produces so much but exports so little (for example, whether most of it is consumed domestically).
+
+## How to run
 ```bash
 python3 analysis.py
 ```
